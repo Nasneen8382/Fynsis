@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% load static %}
+    <title>Datepicker</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Reset styles -->
+    <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css" />
+    <!-- Google Fonts Muli -->
+    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Fin sYs</title>
+    <!--favicon-->
+    <link rel="icon" href="{% static 'assets/images/favicon-32x32.png' %}" type="image/png"/>
+    <!-- Vector CSS -->
+    <link href="{% static 'assets/plugins/vectormap/jquery-jvectormap-2.0.2.css' %}" rel="stylesheet"/>
+    <!--plugins-->
+    <link href="{% static 'assets/plugins/simplebar/css/simplebar.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css' %}" rel="stylesheet"/>
+    <link href="{% static 'assets/plugins/metismenu/css/metisMenu.min.css' %}" rel="stylesheet"/>
+    <!-- loader-->
+    <link href="{% static 'assets/css/pace.min.css' %}" rel="stylesheet"/>
+    <script src="{% static 'assets/js/pace.min.js' %}"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}"/>
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}"/>
+    <!-- App CSS -->
+
+    
+    <link rel="stylesheet" href="{% static 'assets/css/app.css' %}"/>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <style>
+        #ui-datepicker-div {
+            width: 15rem;
+            left: 600px;
+            font-size: 1rem;
+        }
+
+        .ui-datepicker-calendar {
+            display: none;
+        }
+
+        .datepicker {
+            margin-top: 1rem;
+            display: grid;
+            justify-items: center;
+        }
+        select>option {
+            
+            background-color: rgb(212, 212, 212);
+        }
+
+        .ui-datepicker-prev {
+            background: white;
+            cursor: pointer;
+        }
+
+        .ui-datepicker-next {
+            background: white;
+            cursor: pointer;
+        }
+
+        .ui-datepicker .ui-datepicker-buttonpane button {
+            color: white;
+            background: black;
+            font-size: .9rem;
+        }
+
+        /* .ui-datepicker .ui-datepicker-buttonpane button:hover {
+            color: white;
+            background: rgb(234, 176, 0);
+        } */
+
+        .monthYearPicker {
+            font-size: 1rem;
+            height: 1.5rem;
+            width: 12rem;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="datepicker">
+        <input readonly name="FromDate" class="monthYearPicker" placeholder=" From month/year" >
+        <input readonly name="ToDate" class="monthYearPicker" placeholder=" To month/year " />
+    </div>
+    <div class="page-content">
+        <div class="card radius-15">
+            <div class="card-body">
+                <div class="card-title">
+                    <center><h2 class="mb-0">GSTR-1</h2></center>
+                    <hr>
+                </div>
+            </div>
+        </div>
+
+        <div class="card radius-15">
+            <div class="card-body">
+                <form action="{% url 'gstr3b1' %}" method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-4">
+                            <input readonly name="FromDate" class="monthYearPicker" placeholder=" From month/year" >                            
+                        </div>
+                        <div class="col-4">
+                            <input readonly name="ToDate" class="monthYearPicker" placeholder=" To month/year " /> 
+                        </div>
+                        
+                        <div class="col-4"></div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-info" type="submit">Search</button>
+                            <button class="btn btn-outline-info" onclick="printDiv()">Print</button>
+                        </div>   
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card radius-15">
+            <div class="card-body">
+                <div class="container-fluid">
+                    <p style="text-align: right;color: rgb(255, 255, 255);"><span style="font-weight: bold;">From Date</span>  : {{fromdate|date:'d-m-Y'}} <br> <span style="font-weight: bold;">To Date</span> : {{todate|date:'d-m-Y'}}</p>
+                    <table class="table table-responsive-md mt-4 table-hover table-bordered" style="background-color: rgba(0, 0, 0, 0.2);">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Nature Of Supplies</th>
+                                <th style="text-align: center;">Total Taxable Value</th>
+                                <th style="text-align: center;">IGST</th>
+                                <th style="text-align: center;">CGST</th>
+                                <th style="text-align: center;">SGST</th>
+                                <th style="text-align: center;">Cess</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>(a) Outward taxable supplies (other than zero rated,nill rated and exempted)</td>
+                                <td style="text-align: center;">
+                                    {% if total %}
+                                        ₹{{ total }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if igst %}
+                                        ₹{{ igst }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if cgst %}
+                                        ₹{{ cgst }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if sgst %}
+                                        ₹{{ sgst }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if tds %}
+                                        ₹{{ tds }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>    
+                            </tr>
+                            <tr>
+                                <td>(b) Outward taxable supplies (zero rated)</td>
+                                <td style="text-align: center;">
+                                    {% if total1 %}
+                                        {{ total1 }}.00
+                                    {% else %}
+                                        ₹0
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if igst1 %}
+                                        ₹{{ igst1 }}
+                                    {% else %}
+                                        ₹0
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if cgst1 %}
+                                        ₹{{ cgst1 }}
+                                    {% else %}
+                                        ₹0
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if sgst1 %}
+                                        ₹{{ sgst1 }}
+                                    {% else %}
+                                        ₹0
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if tds1 %}
+                                        ₹{{ tds1 }}
+                                    {% else %}
+                                        ₹0
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>(c) Other outward supplies (nill rated and exempted)</td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>    
+                            </tr>
+                            <tr>
+                                <td>(d) Inward supplies (liable to reverse charge)</td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>    
+                            </tr>
+                            <tr>
+                                <td>(e) Non-GST outward supplies (liable to reverse charge)</td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>
+                                <td style="text-align: center;"></td>    
+                            </tr>
+                            <tr>
+                                <td><b>Total Value</b></td>
+                                <td style="text-align: center;"><b>₹{{ sum1 }}.00</b></td>
+                                <td style="text-align: center;"><b>₹{{ igst }}.00</b></td>
+                                <td style="text-align: center;"><b>₹{{ cgst }}.00</b></td>
+                                <td style="text-align: center;"><b>₹{{ sgst }}.00</b></td>
+                                <td style="text-align: center;"><b>₹{{ tds }}.00</b></td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <h6>Eligible ITC</h6>
+                    <table class="table table-responsive-md mt-4 table-hover table-bordered" style="background-color: rgba(0, 0, 0, 0.2);">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Details</th>
+                                <th style="text-align: center;">IGST</th>
+                                <th style="text-align: center;">CGST</th>
+                                <th style="text-align: center;">SGST</th>
+                                <th style="text-align: center;">Cess</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ITC Available</td>
+                                <td style="text-align: center;">
+                                    {% if igst_sum %}
+                                        ₹{{ igst_sum }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if cgst2 %}
+                                        ₹{{ cgst2 }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if sgst2 %}
+                                        ₹{{ sgst2 }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if tds2 %}
+                                        ₹{{ tds2 }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                </td>  
+                            </tr>
+                            <tr>
+                                <td><b>Total Value</b></td>
+                                <td style="text-align: center;"><b>
+                                    {% if igst_sum %}
+                                        ₹{{ igst_sum }}.00
+                                    {% else %}
+                                        ₹0.00
+                                    {% endif %}
+                                    </b></td>
+                                <td style="text-align: center;"><b>₹{{ cgst2 }}.00</b></td>
+                                <td style="text-align: center;"><b>₹{{ sgst2 }}.00</b></td>
+                                <td style="text-align: center;"><b>₹{{ tds2 }}.00</b></td>    
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- REQUIRED FOR MONTH & YEAR PICKER -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js" type="text/javascript"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="Stylesheet"
+        type="text/css" />
+    <script>
+        $(function () {
+            $('.monthYearPicker').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                minDate: new Date(2020, 0),  // Year, Index of Month (Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec)
+                maxDate: new Date(2023, 3),  // Year, Index of Month (Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec)
+                dateFormat: 'MM yy'
+            }).focus(function () {
+                var thisCalendar = $(this);
+                $('.ui-datepicker-calendar').detach();
+                $('.ui-datepicker-close').click(function () {
+                    var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                    var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                    thisCalendar.datepicker('setDate', new Date(year, month, 1));
+                });
+            });
+        });
+    </script>
+    <script>
+        function showTime() {
+            document.getElementById('currentTime').innerHTML = new Date().toUTCString();
+        }
+        showTime();
+        setInterval(function () {
+            showTime();
+        }, 1000);
+    </script>
+</body>
+
+</html>
